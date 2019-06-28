@@ -13,6 +13,8 @@ var imagemin = require("gulp-imagemin"); /* оптимизатор изобра�
 var webp = require("gulp-webp"); /* сохраняет изображения jpg,png в формате webp */
 var uglify = require("gulp-uglify"); /* минификация js */
 var svgstore = require("gulp-svgstore"); /* формирует спрайт svg из отдельных svg-файлов  */
+var posthtml = require("gulp-posthtml");
+var include = require("posthtml-include"); /* для вставки блоков html,  <include src="build/img/sprite.svg"></include> */
 
 gulp.task("clean", function() {
     return del("build");
@@ -61,7 +63,6 @@ gulp.task("copy", function() {
         "source/fonts/**/*.{woff,woff2}", /* указывается путь целиком */
         "source/img/*",
         "!source/img/*.{png,jpg}",
-        "source/*.html"
     ], {
         base: "source" /* базовая папка, скопированы будут элементы внутри неё, а не вся папка целиком */
     })
@@ -81,6 +82,14 @@ gulp.task("style", function() {
         .pipe(server.stream()); /* браузер "подменяет" css файлы, если вносятся изменения в реальном времени  */
 });
 
+gulp.task("html", function () {
+    return gulp.src("source/*.html")
+        .pipe(posthtml([
+            include()
+        ]))
+        .pipe(gulp.dest("build"));
+});
+
 gulp.task("serve", function() {
     server.init({
         server: "build/",
@@ -92,8 +101,8 @@ gulp.task("serve", function() {
 
     gulp.watch("source/less/**/*.less", gulp.series('style')); /* watcher встроенный  */
     gulp.watch("source/js/**/*.js", gulp.series('js'));
-    gulp.watch("source/*.html");
+    gulp.watch("source/*.html", gulp.series('html'));
     gulp.watch("source/img/**/*");
 });
 
-gulp.task("build", gulp.series('clean', 'copy', gulp.parallel('style', 'images', 'sprite', 'webp', 'js')));
+gulp.task("build", gulp.series('clean', 'copy', gulp.parallel('style', 'images', 'sprite', 'webp', 'js', 'html')));

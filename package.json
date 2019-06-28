@@ -14,7 +14,9 @@
     "gulp-webp": "^4.0.1",
     "gulp-imagemin": "^6.0.0",
     "gulp-uglify": "^3.0.2",
-    "gulp-svgstore": "^7.0.1"
+    "gulp-svgstore": "^7.0.1",
+    "gulp-posthtml": "^3.0.4",
+    "posthtml-include": "^1.2.0"
   },
   "scripts": {
     "build": "gulp build",
